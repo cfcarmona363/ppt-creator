@@ -1,0 +1,10 @@
+[
+  {
+    "id": "demo",
+    "title": "Bienvenido a Presentation Hub",
+    "created": "2026-03-26",
+    "description": "Presentación de demostración del sistema",
+    "slides_count": 5,
+    "theme": "dark-elegant"
+  }
+]
