@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vāyu Energy — Power Developers. Local by Design.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #FAF8F5;
+      --bg-dark: #1B2A1E;
+      --bg-medium: #2C3E30;
+      --text: #1B2A1E;
+      --text-light: #F5F0EA;
+      --accent: #C8963E;
+      --accent-light: #D4A853;
+      --muted: #7A8B6F;
+      --muted-light: #A3B196;
+      --surface: #FFFFFF;
+      --surface-dark: #243528;
+      --border: rgba(27, 42, 30, 0.08);
+      --border-light: rgba(245, 240, 234, 0.12);
+      --cream: #F0EBE3;
+      --sage: #8FA888;
+    }
+
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .deck { position: relative; width: 100vw; height: 100vh; }
+
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 4rem 6rem;
+      opacity: 0; pointer-events: none;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .slide.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+    h1, h2, h3, .overline, blockquote { font-family: 'Playfair Display', serif; }
+
+    h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 700; line-height: 1.15; text-align: center; }
+    h2 { font-size: clamp(1.6rem, 3.5vw, 2.6rem); font-weight: 600; line-height: 1.25; text-align: center; margin-bottom: 1.5rem; }
+    h3 { font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; line-height: 1.3; }
+    p, li { font-size: clamp(0.9rem, 1.4vw, 1.1rem); line-height: 1.7; font-weight: 300; }
+
+    .overline {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      color: var(--accent);
+    }
+    .accent { color: var(--accent); }
+    .subtitle { margin-top: 1rem; font-size: clamp(1rem, 1.6vw, 1.25rem); font-weight: 300; opacity: 0.8; text-align: center; max-width: 600px; }
+
+    /* Dark slides */
+    .slide-dark { background: var(--bg-dark); color: var(--text-light); }
+    .slide-dark .overline { color: var(--accent-light); }
+    .slide-dark .accent { color: var(--accent-light); }
+
+    /* Gradient dark */
+    .slide-gradient {
+      background: linear-gradient(160deg, #1B2A1E 0%, #2C3E30 40%, #1B2A1E 100%);
+      color: var(--text-light);
+    }
+
+    /* Light slides */
+    .slide-light { background: var(--bg); color: var(--text); }
+    .slide-cream { background: var(--cream); color: var(--text); }
+
+    /* Columns */
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; width: 100%; max-width: 950px; }
+    .col { display: flex; flex-direction: column; gap: 1rem; }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2rem; width: 100%; max-width: 850px; margin-top: 1rem;
+    }
+    .stat {
+      text-align: center; padding: 2rem 1.5rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+    }
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700; color: var(--accent-light);
+      margin-bottom: 0.5rem;
+    }
+    .stat-label { font-size: 0.85rem; font-weight: 400; opacity: 0.7; letter-spacing: 0.04em; }
+
+    /* Bullet list */
+    .bullet-list { list-style: none; max-width: 700px; width: 100%; }
+    .bullet-list li {
+      padding: 0.8rem 0; padding-left: 1.5rem;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    .bullet-list li::before {
+      content: ''; position: absolute; left: 0; top: 1.15rem;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+    }
+    .slide-dark .bullet-list li { border-bottom-color: var(--border-light); }
+
+    /* Quote */
+    blockquote {
+      max-width: 750px; text-align: center;
+      font-style: italic; font-size: clamp(1.1rem, 2vw, 1.6rem);
+      line-height: 1.7;
+    }
+    blockquote cite {
+      display: block; margin-top: 1.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem; font-style: normal;
+      font-weight: 500; letter-spacing: 0.05em;
+      color: var(--accent);
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem; width: 100%; max-width: 900px; margin-top: 0.5rem;
+    }
+    .card {
+      padding: 1.8rem; border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .card h3 { margin-bottom: 0.6rem; font-size: 1.1rem; }
+    .card p { font-size: 0.9rem; opacity: 0.75; }
+    .slide-dark .card {
+      background: var(--surface-dark);
+      border-color: var(--border-light);
+    }
+
+    /* SVG containers */
+    .svg-illustration { max-width: 360px; width: 100%; margin: 1.5rem auto; }
+    .svg-small { max-width: 200px; }
+    .svg-icon { max-width: 80px; margin-bottom: 1rem; }
+
+    /* Timeline */
+    .timeline { display: flex; gap: 0; width: 100%; max-width: 900px; margin-top: 1rem; position: relative; }
+    .timeline::before {
+      content: ''; position: absolute; top: 30px; left: 0; right: 0;
+      height: 2px; background: var(--border-light);
+    }
+    .timeline-item {
+      flex: 1; text-align: center; padding: 0 1rem; position: relative;
+    }
+    .timeline-dot {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--accent); margin: 22px auto 1.2rem; position: relative; z-index: 1;
+    }
+    .timeline-item h3 { font-size: 1rem; margin-bottom: 0.4rem; color: var(--accent-light); }
+    .timeline-item p { font-size: 0.8rem; opacity: 0.7; line-height: 1.5; }
+
+    /* Nav */
+    .nav-bar {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 8px; z-index: 100;
+      background: rgba(27, 42, 30, 0.85); backdrop-filter: blur(10px);
+      padding: 8px 16px; border-radius: 20px;
+    }
+    .nav-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 1.5px solid rgba(245, 240, 234, 0.4);
+      background: transparent; cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .nav-dot.active { background: var(--accent); border-color: var(--accent); transform: scale(1.2); }
+    .nav-dot:hover { border-color: var(--accent-light); }
+
+    .slide-counter {
+      position: fixed; bottom: 2.1rem; right: 2rem;
+      font-size: 0.75rem; font-weight: 500; color: var(--muted);
+      letter-spacing: 0.1em; z-index: 100;
+    }
+
+    /* Partners section */
+    .partners-row {
+      display: flex; gap: 2rem; align-items: center; justify-content: center;
+      flex-wrap: wrap; margin-top: 1.5rem;
+    }
+    .partner-card {
+      padding: 1.5rem 2rem; border-radius: 12px;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border-light);
+      text-align: center; min-width: 200px;
+    }
+    .partner-card .stat-number { font-size: 2rem; }
+    .partner-card .stat-label { font-size: 0.8rem; }
+
+    /* CTA slide */
+    .cta-container { text-align: center; max-width: 600px; }
+    .cta-btn {
+      display: inline-block; margin-top: 2rem;
+      padding: 1rem 2.5rem; border-radius: 8px;
+      background: var(--accent); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 500;
+      text-decoration: none; letter-spacing: 0.03em;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .cta-btn:hover { background: var(--accent-light); transform: translateY(-2px); }
+
+    .divider {
+      width: 60px; height: 3px; background: var(--accent);
+      border-radius: 2px; margin: 1rem auto;
+    }
+
+    @media (max-width: 768px) {
+      .slide { padding: 2rem 1.5rem; }
+      .columns, .stats-grid, .card-grid { grid-template-columns: 1fr; }
+      .timeline { flex-direction: column; gap: 1rem; }
+      .timeline::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+
+    <!-- SLIDE 1: Title -->
+    <section class="slide slide-dark active" data-index="0">
+      <svg class="svg-illustration svg-small" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-family="'Playfair Display', serif" font-size="28" font-weight="700" fill="#F5F0EA" letter-spacing="1">Vāyu</text>
+        <text x="50%" y="85%" text-anchor="middle" dominant-baseline="central" font-family="'Inter', sans-serif" font-size="11" fill="#C8963E" letter-spacing="4" font-weight="500">ENERGY</text>
+      </svg>
+      <div class="overline">Utility-Scale Clean Energy Development</div>
+      <h1>Power Developers.<br><span class="accent">Local by Design.</span></h1>
+      <p class="subtitle">Building clean energy projects rooted in community trust, institutional expertise, and long-term partnerships across the United States.</p>
+    </section>
+
+    <!-- SLIDE 2: Who We Are -->
+    <section class="slide slide-light" data-index="1">
+      <div class="overline" style="color: var(--muted);">Who We Are</div>
+      <h2>A Regionally Focused<br><span class="accent">Development Platform</span></h2>
+      <div class="divider"></div>
+      <div class="columns" style="margin-top: 1.5rem;">
+        <div class="col" style="align-items: center;">
+          <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width: 140px;">
+            <circle cx="80" cy="80" r="75" fill="none" stroke="#E8E3DA" stroke-width="2"/>
+            <circle cx="80" cy="80" r="55" fill="none" stroke="#C8963E" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <!-- Wind turbine icon -->
+            <line x1="80" y1="45" x2="80" y2="115" stroke="#1B2A1E" stroke-width="3" stroke-linecap="round"/>
+            <line x1="80" y1="45" x2="55" y2="75" stroke="#1B2A1E" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="45" x2="105" y2="75" stroke="#1B2A1E" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="45" x2="80" y2="20" stroke="#1B2A1E" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="80" cy="45" r="4" fill="#C8963E"/>
+            <line x1="60" y1="115" x2="100" y2="115" stroke="#1B2A1E" stroke-width="2" stroke-linecap="round"/>
+            <!-- Ground -->
+            <path d="M30 125 Q80 118 130 125" stroke="#8FA888" stroke-width="1.5" fill="none"/>
+          </svg>
+          <p style="text-align: center; max-width: 350px;"><strong>Vāyu Energy</strong> is a founder-led platform that develops utility-scale clean energy projects with deep local knowledge and institutional-grade execution.</p>
+        </div>
+        <div class="col" style="align-items: center;">
+          <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width: 140px;">
+            <circle cx="80" cy="80" r="75" fill="none" stroke="#E8E3DA" stroke-width="2"/>
+            <circle cx="80" cy="80" r="55" fill="none" stroke="#C8963E" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <!-- Handshake icon -->
+            <path d="M45 80 L60 68 L75 78 L90 68 L105 78 L115 72" stroke="#1B2A1E" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M40 85 L55 73" stroke="#1B2A1E" stroke-width="2" stroke-linecap="round"/>
+            <path d="M120 77 L110 85" stroke="#1B2A1E" stroke-width="2" stroke-linecap="round"/>
+            <!-- People silhouettes -->
+            <circle cx="55" cy="52" r="8" fill="none" stroke="#8FA888" stroke-width="1.5"/>
+            <path d="M43 70 Q55 63 67 70" stroke="#8FA888" stroke-width="1.5" fill="none"/>
+            <circle cx="105" cy="52" r="8" fill="none" stroke="#C8963E" stroke-width="1.5"/>
+            <path d="M93 70 Q105 63 117 70" stroke="#C8963E" stroke-width="1.5" fill="none"/>
+            <!-- Ground -->
+            <path d="M30 105 Q80 98 130 105" stroke="#8FA888" stroke-width="1.5" fill="none"/>
+          </svg>
+          <p style="text-align: center; max-width: 350px;">We combine <strong>disciplined origination</strong>, deep community engagement, and strong capital partnerships to deliver projects built for generations.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: Stats / Track Record -->
+    <section class="slide slide-gradient" data-index="2">
+      <div class="overline">Track Record</div>
+      <h2 style="color: var(--text-light);">Deep Experience Rooted in<br><span class="accent">Powering Communities</span></h2>
+      <div class="stats-grid">
+        <div class="stat">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:50px; margin: 0 auto 0.8rem;">
+            <circle cx="30" cy="30" r="28" fill="none" stroke="rgba(200,150,62,0.3)" stroke-width="1.5"/>
+            <text x="30" y="24" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#A3B196" font-weight="500">YEARS</text>
+            <text x="30" y="40" text-anchor="middle" font-family="'Playfair Display', serif" font-size="16" fill="#C8963E" font-weight="700">EXP</text>
+          </svg>
+          <div class="stat-number">60+</div>
+          <div class="stat-label">Years Combined<br>Development Experience</div>
+        </div>
+        <div class="stat">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:50px; margin: 0 auto 0.8rem;">
+            <circle cx="30" cy="30" r="28" fill="none" stroke="rgba(200,150,62,0.3)" stroke-width="1.5"/>
+            <!-- Lightning bolt -->
+            <polygon points="28,15 22,33 30,33 26,47 38,27 30,27 34,15" fill="#C8963E" opacity="0.9"/>
+          </svg>
+          <div class="stat-number">6+ GW</div>
+          <div class="stat-label">Projects Developed<br>& Deployed</div>
+        </div>
+        <div class="stat">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:50px; margin: 0 auto 0.8rem;">
+            <circle cx="30" cy="30" r="28" fill="none" stroke="rgba(200,150,62,0.3)" stroke-width="1.5"/>
+            <text x="30" y="33" text-anchor="middle" font-family="'Playfair Display', serif" font-size="18" fill="#C8963E" font-weight="700">$</text>
+          </svg>
+          <div class="stat-number">$2B+</div>
+          <div class="stat-label">Project Capital<br>Deployed</div>
+        </div>
+      </div>
+      <p style="margin-top: 1.5rem; font-size: 0.95rem; opacity: 0.65; text-align: center; max-width: 550px;">Powering 2M+ homes and generating 20B+ kWh annually across the United States.</p>
+    </section>
+
+    <!-- SLIDE 4: Our Approach -->
+    <section class="slide slide-cream" data-index="3">
+      <div class="overline" style="color: var(--muted);">Our Approach</div>
+      <h2>Where Experience<br>Meets <span class="accent">Ingenuity</span></h2>
+      <div class="card-grid">
+        <div class="card">
+          <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" class="svg-icon">
+            <circle cx="25" cy="25" r="22" fill="none" stroke="#C8963E" stroke-width="1.5"/>
+            <path d="M15 30 Q20 20 25 22 Q30 24 35 18" stroke="#1B2A1E" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <circle cx="25" cy="35" r="3" fill="#8FA888"/>
+            <circle cx="18" cy="28" r="2" fill="#C8963E"/>
+          </svg>
+          <h3>Local Experience & Network</h3>
+          <p>Built on strong local relationships and deep understanding of communities where we develop.</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" class="svg-icon">
+            <circle cx="25" cy="25" r="22" fill="none" stroke="#C8963E" stroke-width="1.5"/>
+            <!-- Wind turbine mini -->
+            <line x1="25" y1="15" x2="25" y2="38" stroke="#1B2A1E" stroke-width="2" stroke-linecap="round"/>
+            <line x1="25" y1="15" x2="15" y2="28" stroke="#1B2A1E" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="25" y1="15" x2="35" y2="28" stroke="#1B2A1E" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="25" cy="15" r="2.5" fill="#C8963E"/>
+          </svg>
+          <h3>Proven Clean Energy Tech</h3>
+          <p>Utility-scale wind technology that has powered American communities reliably for decades.</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" class="svg-icon">
+            <circle cx="25" cy="25" r="22" fill="none" stroke="#C8963E" stroke-width="1.5"/>
+            <!-- Grid/chart icon -->
+            <rect x="14" y="20" width="6" height="16" rx="1" fill="#8FA888" opacity="0.7"/>
+            <rect x="22" y="16" width="6" height="20" rx="1" fill="#C8963E" opacity="0.8"/>
+            <rect x="30" y="12" width="6" height="24" rx="1" fill="#1B2A1E" opacity="0.6"/>
+          </svg>
+          <h3>Market-Driven Projects</h3>
+          <p>Developing where new, reliable generation is needed most to support grid growth.</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" class="svg-icon">
+            <circle cx="25" cy="25" r="22" fill="none" stroke="#C8963E" stroke-width="1.5"/>
+            <!-- Shield/capital icon -->
+            <path d="M25 12 L36 18 L36 30 Q36 38 25 42 Q14 38 14 30 L14 18 Z" fill="none" stroke="#1B2A1E" stroke-width="1.5"/>
+            <text x="25" y="30" text-anchor="middle" font-family="'Playfair Display', serif" font-size="12" fill="#C8963E" font-weight="700">$</text>
+          </svg>
+          <h3>Strong Capital Partners</h3>
+          <p>Backed by well-capitalized, long-term financial partners with $10B+ AUM.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: Development Process -->
+    <section class="slide slide-dark" data-index="4">
+      <div class="overline">Development Process</div>
+      <h2 style="color: var(--text-light);">From Origination to<br><span class="accent">Commercial Operations</span></h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Origination</h3>
+          <p>Site identification, landowner engagement, and resource assessment</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Development</h3>
+          <p>Permitting, interconnection, environmental studies, and offtake</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Construction</h3>
+          <p>Engineering, procurement, and construction with proven partners</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Operations</h3>
+          <p>Long-term asset management and community stewardship</p>
+        </div>
+      </div>
+      <svg viewBox="0 0 700 80" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 700px; margin-top: 1.5rem;">
+        <!-- Landscape -->
+        <path d="M0 70 Q50 55 100 62 Q200 50 300 58 Q400 48 500 55 Q600 50 700 60 L700 80 L0 80 Z" fill="#243528"/>
+        <!-- Wind turbines silhouette -->
+        <g opacity="0.5">
+          <line x1="150" y1="25" x2="150" y2="58" stroke="#8FA888" stroke-width="1.5"/>
+          <line x1="150" y1="25" x2="138" y2="40" stroke="#8FA888" stroke-width="1"/>
+          <line x1="150" y1="25" x2="162" y2="40" stroke="#8FA888" stroke-width="1"/>
+          <line x1="150" y1="25" x2="150" y2="10" stroke="#8FA888" stroke-width="1"/>
+          <circle cx="150" cy="25" r="2" fill="#C8963E"/>
+
+          <line x1="350" y1="20" x2="350" y2="52" stroke="#8FA888" stroke-width="1.5"/>
+          <line x1="350" y1="20" x2="336" y2="37" stroke="#8FA888" stroke-width="1"/>
+          <line x1="350" y1="20" x2="364" y2="37" stroke="#8FA888" stroke-width="1"/>
+          <line x1="350" y1="20" x2="350" y2="4" stroke="#8FA888" stroke-width="1"/>
+          <circle cx="350" cy="20" r="2" fill="#C8963E"/>
+
+          <line x1="550" y1="22" x2="550" y2="53" stroke="#8FA888" stroke-width="1.5"/>
+          <line x1="550" y1="22" x2="538" y2="38" stroke="#8FA888" stroke-width="1"/>
+          <line x1="550" y1="22" x2="562" y2="38" stroke="#8FA888" stroke-width="1"/>
+          <line x1="550" y1="22" x2="550" y2="7" stroke="#8FA888" stroke-width="1"/>
+          <circle cx="550" cy="22" r="2" fill="#C8963E"/>
+        </g>
+      </svg>
+    </section>
+
+    <!-- SLIDE 6: Partnerships -->
+    <section class="slide slide-light" data-index="5">
+      <div class="overline" style="color: var(--muted);">Partnership Model</div>
+      <h2>Building Strong Partnerships<br>at <span class="accent">Every Level</span></h2>
+      <div class="columns" style="gap: 2rem; margin-top: 1rem;">
+        <div class="col" style="gap: 1.2rem;">
+          <div class="card" style="border-left: 3px solid var(--accent);">
+            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="width: 36px; margin-bottom: 0.5rem;">
+              <rect x="5" y="25" width="30" height="12" rx="2" fill="none" stroke="#1B2A1E" stroke-width="1.5"/>
+              <path d="M10 25 L10 15 Q20 8 30 15 L30 25" fill="none" stroke="#C8963E" stroke-width="1.5"/>
+              <line x1="20" y1="10" x2="20" y2="25" stroke="#8FA888" stroke-width="1" stroke-dasharray="2 2"/>
+            </svg>
+            <h3>Landowners</h3>
+            <p>Long-term leases that preserve ownership. Owner-to-owner direct relationships with Vāyu founders.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--sage);">
+            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="width: 36px; margin-bottom: 0.5rem;">
+              <circle cx="20" cy="14" r="6" fill="none" stroke="#1B2A1E" stroke-width="1.5"/>
+              <circle cx="10" cy="22" r="4" fill="none" stroke="#8FA888" stroke-width="1"/>
+              <circle cx="30" cy="22" r="4" fill="none" stroke="#8FA888" stroke-width="1"/>
+              <path d="M6 35 Q10 28 14 35" stroke="#8FA888" stroke-width="1" fill="none"/>
+              <path d="M14 35 Q20 26 26 35" stroke="#1B2A1E" stroke-width="1.5" fill="none"/>
+              <path d="M26 35 Q30 28 34 35" stroke="#8FA888" stroke-width="1" fill="none"/>
+            </svg>
+            <h3>Communities</h3>
+            <p>Early engagement with local leaders and residents ensuring projects align with community priorities.</p>
+          </div>
+        </div>
+        <div class="col" style="gap: 1.2rem;">
+          <div class="card" style="border-left: 3px solid var(--muted);">
+            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="width: 36px; margin-bottom: 0.5rem;">
+              <rect x="8" y="10" width="24" height="22" rx="3" fill="none" stroke="#1B2A1E" stroke-width="1.5"/>
+              <line x1="14" y1="18" x2="26" y2="18" stroke="#C8963E" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="14" y1="23" x2="22" y2="23" stroke="#8FA888" stroke-width="1" stroke-linecap="round"/>
+              <line x1="14" y1="27" x2="24" y2="27" stroke="#8FA888" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+            <h3>Other Partners</h3>
+            <p>Consultants, service providers, and technical specialists who share our commitment to quality.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--accent);">
+            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="width: 36px; margin-bottom: 0.5rem;">
+              <path d="M20 8 L32 16 L32 28 Q32 35 20 38 Q8 35 8 28 L8 16 Z" fill="none" stroke="#C8963E" stroke-width="1.5"/>
+              <polyline points="14 22 18 26 26 18" stroke="#1B2A1E" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3>Capital Partners</h3>
+            <p>Backed by $250M+ dedicated fund and $10B+ institutional platform for long-term scale.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: Quote -->
+    <section class="slide slide-gradient" data-index="6">
+      <svg viewBox="0 0 60 50" xmlns="http://www.w3.org/2000/svg" style="width: 50px; margin-bottom: 1.5rem; opacity: 0.4;">
+        <text x="0" y="42" font-family="'Playfair Display', serif" font-size="60" fill="#C8963E">"</text>
+      </svg>
+      <blockquote>
+        <p>The wind is an invisible, intangible thing; and yet it is made to turn the wheels of mills and drive the ships of the ocean.</p>
+        <cite>— Abraham Lincoln, 1858</cite>
+      </blockquote>
+      <div class="divider" style="margin-top: 2rem;"></div>
+      <p style="margin-top: 1.2rem; font-size: 0.9rem; opacity: 0.55; max-width: 500px; text-align: center;">Vāyu Energy carries forward this vision — harnessing natural forces to power communities for generations to come.</p>
+    </section>
+
+    <!-- SLIDE 8: Team -->
+    <section class="slide slide-cream" data-index="7">
+      <div class="overline" style="color: var(--muted);">Leadership</div>
+      <h2>Management <span class="accent">Team</span></h2>
+      <div class="divider"></div>
+      <div style="display: flex; gap: 2.5rem; margin-top: 1.5rem; flex-wrap: wrap; justify-content: center;">
+        <div style="text-align: center; max-width: 200px;">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: 100px; margin-bottom: 0.8rem;">
+            <circle cx="50" cy="50" r="48" fill="#E8E3DA" stroke="#C8963E" stroke-width="1.5"/>
+            <circle cx="50" cy="38" r="14" fill="none" stroke="#1B2A1E" stroke-width="2"/>
+            <path d="M25 78 Q35 55 50 55 Q65 55 75 78" fill="none" stroke="#1B2A1E" stroke-width="2"/>
+            <circle cx="50" cy="38" r="3" fill="#C8963E" opacity="0.6"/>
+          </svg>
+          <h3 style="font-size: 1rem;">Shivam Bembalkar</h3>
+          <p style="font-size: 0.8rem; color: var(--accent); font-weight: 500;">Co-Founder & CEO</p>
+        </div>
+        <div style="text-align: center; max-width: 200px;">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: 100px; margin-bottom: 0.8rem;">
+            <circle cx="50" cy="50" r="48" fill="#E8E3DA" stroke="#C8963E" stroke-width="1.5"/>
+            <circle cx="50" cy="38" r="14" fill="none" stroke="#1B2A1E" stroke-width="2"/>
+            <path d="M25 78 Q35 55 50 55 Q65 55 75 78" fill="none" stroke="#1B2A1E" stroke-width="2"/>
+            <circle cx="50" cy="38" r="3" fill="#C8963E" opacity="0.6"/>
+          </svg>
+          <h3 style="font-size: 1rem;">Elon Hasson</h3>
+          <p style="font-size: 0.8rem; color: var(--accent); font-weight: 500;">Co-Founder & CDO</p>
+        </div>
+        <div style="text-align: center; max-width: 200px;">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: 100px; margin-bottom: 0.8rem;">
+            <circle cx="50" cy="50" r="48" fill="#E8E3DA" stroke="#C8963E" stroke-width="1.5"/>
+            <circle cx="50" cy="38" r="14" fill="none" stroke="#1B2A1E" stroke-width="2"/>
+            <path d="M25 78 Q35 55 50 55 Q65 55 75 78" fill="none" stroke="#1B2A1E" stroke-width="2"/>
+            <circle cx="50" cy="38" r="3" fill="#C8963E" opacity="0.6"/>
+          </svg>
+          <h3 style="font-size: 1rem;">Ben Alingh</h3>
+          <p style="font-size: 0.8rem; color: var(--accent); font-weight: 500;">Senior Advisor</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: Market Opportunity -->
+    <section class="slide slide-dark" data-index="8">
+      <div class="overline">Market Context</div>
+      <h2 style="color: var(--text-light);">Designed to Match<br><span class="accent">Market Needs</span></h2>
+      <div class="divider"></div>
+      <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 600px; margin: 1rem 0;">
+        <!-- Background grid -->
+        <g opacity="0.15">
+          <line x1="0" y1="50" x2="600" y2="50" stroke="#8FA888" stroke-width="0.5"/>
+          <line x1="0" y1="100" x2="600" y2="100" stroke="#8FA888" stroke-width="0.5"/>
+          <line x1="0" y1="150" x2="600" y2="150" stroke="#8FA888" stroke-width="0.5"/>
+        </g>
+        <!-- Rising demand curve -->
+        <path d="M30 170 Q100 160 180 145 Q280 120 380 90 Q480 55 570 25" stroke="#C8963E" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- Fill under curve -->
+        <path d="M30 170 Q100 160 180 145 Q280 120 380 90 Q480 55 570 25 L570 180 L30 180 Z" fill="url(#demandGrad)" opacity="0.2"/>
+        <defs>
+          <linearGradient id="demandGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#C8963E"/>
+            <stop offset="100%" stop-color="#C8963E" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- Labels -->
+        <text x="30" y="195" font-family="'Inter', sans-serif" font-size="10" fill="#A3B196">Today</text>
+        <text x="540" y="195" font-family="'Inter', sans-serif" font-size="10" fill="#A3B196">2035+</text>
+        <text x="300" y="195" font-family="'Inter', sans-serif" font-size="10" fill="#A3B196" text-anchor="middle">U.S. Power Demand Growth</text>
+        <!-- Driver labels -->
+        <g font-family="'Inter', sans-serif" font-size="9" fill="#F5F0EA" opacity="0.7">
+          <text x="120" y="135">Datacenters</text>
+          <text x="260" y="105">Manufacturing</text>
+          <text x="410" y="70">Electrification</text>
+          <text x="500" y="40">AI / Growth</text>
+        </g>
+        <!-- Dots -->
+        <circle cx="150" cy="148" r="3" fill="#C8963E"/>
+        <circle cx="300" cy="115" r="3" fill="#C8963E"/>
+        <circle cx="440" cy="75" r="3" fill="#C8963E"/>
+        <circle cx="560" cy="28" r="3" fill="#C8963E"/>
+      </svg>
+      <p style="max-width: 550px; text-align: center; font-size: 0.95rem; opacity: 0.7; margin-top: 0.5rem;">America's power demand is accelerating. Vāyu develops projects where new, reliable generation is needed most.</p>
+    </section>
+
+    <!-- SLIDE 10: CTA / Closing -->
+    <section class="slide slide-gradient" data-index="9">
+      <svg viewBox="0 0 240 70" xmlns="http://www.w3.org/2000/svg" style="width: 200px; margin-bottom: 2rem;">
+        <text x="50%" y="40%" text-anchor="middle" dominant-baseline="central" font-family="'Playfair Display', serif" font-size="32" font-weight="700" fill="#F5F0EA" letter-spacing="1">Vāyu</text>
+        <text x="50%" y="80%" text-anchor="middle" dominant-baseline="central" font-family="'Inter', sans-serif" font-size="12" fill="#C8963E" letter-spacing="5" font-weight="500">ENERGY</text>
+      </svg>
+      <div class="cta-container">
+        <h2 style="color: var(--text-light);">Let's Explore What's<br>Possible — <span class="accent">Together</span></h2>
+        <div class="divider"></div>
+        <p style="margin-top: 1.2rem; opacity: 0.7; font-size: 1rem;">If you'd like to learn more about how we work, we'd be glad to connect.</p>
+        <a class="cta-btn" href="https://www.vayuenergy.us/contact" target="_blank">Get in Touch</a>
+        <p style="margin-top: 2rem; font-size: 0.8rem; opacity: 0.4;">contact@vayuenergy.us &nbsp;|&nbsp; vayuenergy.us</p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-bar" id="navBar"></div>
+  <div class="slide-counter" id="counter"></div>
+
+  <script>
+    (function () {
+      const slides = document.querySelectorAll('.slide');
+      const navBar = document.getElementById('navBar');
+      const counter = document.getElementById('counter');
+      const total = slides.length;
+      let current = 0;
+
+      slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+        dot.addEventListener('click', () => goTo(i));
+        navBar.appendChild(dot);
+      });
+
+      function goTo(n) {
+        if (n < 0 || n >= total || n === current) return;
+        current = n;
+        slides.forEach((s, i) => {
+          s.classList.remove('active', 'prev');
+          if (i === current) s.classList.add('active');
+          else if (i < current) s.classList.add('prev');
+        });
+        navBar.querySelectorAll('.nav-dot').forEach((d, i) => {
+          d.classList.toggle('active', i === current);
+        });
+        counter.textContent = (current + 1) + ' / ' + total;
+
+        // Adapt counter color based on slide bg
+        const activeSlide = slides[current];
+        if (activeSlide.classList.contains('slide-dark') || activeSlide.classList.contains('slide-gradient')) {
+          counter.style.color = 'rgba(245,240,234,0.5)';
+        } else {
+          counter.style.color = 'var(--muted)';
+        }
+      }
+
+      counter.textContent = '1 / ' + total;
+      counter.style.color = 'rgba(245,240,234,0.5)';
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+      });
+
+      let touchX = 0;
+      document.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+      document.addEventListener('touchend', (e) => {
+        const diff = touchX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) goTo(diff > 0 ? current + 1 : current - 1);
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
