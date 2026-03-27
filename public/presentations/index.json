@@ -6,5 +6,13 @@
     "description": "Presentación de demostración del sistema",
     "slides_count": 5,
     "theme": "dark-elegant"
+  },
+  {
+    "id": "para-vos-mi-amor",
+    "title": "Para vos, mi amor",
+    "created": "2026-03-27",
+    "description": "Una presentación con patitos y mucho amor",
+    "slides_count": 4,
+    "theme": "soft-romantic"
   }
 ]
