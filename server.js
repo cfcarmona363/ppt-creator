@@ -249,13 +249,18 @@ app.get('*', (req, res) => {
 // Initialize database and start server
 initDb()
   .then(() => {
+    console.log('Database initialized successfully')
     app.listen(PORT, () => {
       console.log(`Presentation Hub running on port ${PORT}`)
     })
   })
   .catch((err) => {
     console.error('Failed to initialize database:', err)
-    // Start server anyway for environments without DB (local dev)
+    if (process.env.DATABASE_URL) {
+      // DB is configured but failed - this is a real error, exit
+      process.exit(1)
+    }
+    // No DB configured (local dev) - start anyway
     app.listen(PORT, () => {
       console.log(`Presentation Hub running on port ${PORT} (without database)`)
     })
