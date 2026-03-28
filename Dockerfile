@@ -12,6 +12,8 @@ WORKDIR /app
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/public ./public
 COPY --from=build /app/server.js .
+COPY --from=build /app/db.js .
+COPY --from=build /app/scripts ./scripts
 COPY --from=build /app/package*.json ./
 RUN npm ci --omit=dev
 EXPOSE 3000
