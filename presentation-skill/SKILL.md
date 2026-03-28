@@ -1,6 +1,6 @@
 ---
 name: presentation-generator
-description: Genera presentaciones web autocontenidas y las deploya a Presentation Hub via GitHub API. Usar cuando el usuario pida crear una presentacion, deck, slides, o presentacion web. Frases comunes - creame una presentacion, haceme un deck, necesito slides sobre X, armame una presentacion web, genera slides, presentacion sobre.
+description: Genera presentaciones web autocontenidas y las deploya a Presentation Hub via API REST. Usar cuando el usuario pida crear una presentacion, deck, slides, o presentacion web. Frases comunes - creame una presentacion, haceme un deck, necesito slides sobre X, armame una presentacion web, genera slides, presentacion sobre.
 ---
 
 # Presentation Generator Skill

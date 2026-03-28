@@ -56,6 +56,12 @@ export default function DashboardLayout() {
     setLoading(true)
   }, [])
 
+  const handleRefresh = useCallback(() => {
+    setLoading(true)
+    fetchPresentations()
+    fetchFolders()
+  }, [fetchPresentations, fetchFolders])
+
   async function handleDeletePresentation() {
     if (!deletingPresentation) return
     try {
@@ -90,14 +96,18 @@ export default function DashboardLayout() {
     const currentFolderId = presentation.folder_id || null
     if (currentFolderId === targetFolderId) return
 
+    // Optimistic update: remove from current view immediately
+    setPresentations((prev) => prev.filter((p) => p.id !== presentationId))
+
     try {
       await apiFetch(`/api/presentations/${presentationId}`, {
         method: 'PATCH',
         body: JSON.stringify({ folder_id: targetFolderId }),
       })
-      fetchPresentations()
     } catch (err) {
       console.error('Error moving presentation:', err)
+      // Revert on error
+      fetchPresentations()
     }
   }
 
@@ -122,6 +132,7 @@ export default function DashboardLayout() {
           onSelectFolder={setSelectedFolderId}
           onSearch={handleSearch}
           onFoldersChange={fetchFolders}
+          onRefresh={handleRefresh}
         />
 
         <main style={styles.main}>

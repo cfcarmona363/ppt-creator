@@ -13,16 +13,13 @@ export default function PresentationCard({ presentation, onDelete }) {
     ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
     : {}
 
-  async function handleCopyUrl(e) {
-    e.preventDefault()
-    e.stopPropagation()
+  async function handleCopyUrl() {
     const url = `${window.location.origin}/p/${presentation.slug}`
     try {
       await navigator.clipboard.writeText(url)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // Fallback
       const ta = document.createElement('textarea')
       ta.value = url
       document.body.appendChild(ta)
@@ -34,9 +31,11 @@ export default function PresentationCard({ presentation, onDelete }) {
     }
   }
 
-  function handleDelete(e) {
-    e.preventDefault()
-    e.stopPropagation()
+  function handleOpen() {
+    window.open(`/p/${presentation.slug}`, '_blank')
+  }
+
+  function handleDelete() {
     onDelete(presentation)
   }
 
@@ -52,35 +51,41 @@ export default function PresentationCard({ presentation, onDelete }) {
         ...dragStyle,
         opacity: isDragging ? 0.5 : 1,
       }}
-      {...listeners}
-      {...attributes}
     >
-      {/* Action buttons */}
-      <div style={styles.cardActions}>
-        <button onClick={handleCopyUrl} style={styles.actionBtn} title="Copiar URL">
-          {copied ? (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          ) : (
+      {/* Header with action buttons - NOT draggable */}
+      <div style={styles.cardHeader}>
+        <span style={styles.slideCount}>{presentation.slides_count} slides</span>
+        <div style={styles.cardActions}>
+          <button onClick={handleOpen} style={styles.actionBtn} title="Abrir presentación">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
             </svg>
-          )}
-        </button>
-        <button onClick={handleDelete} style={styles.actionBtn} title="Eliminar">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="3 6 5 6 21 6" />
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-          </svg>
-        </button>
+          </button>
+          <button onClick={handleCopyUrl} style={styles.actionBtn} title={copied ? 'Copiado!' : 'Copiar link'}>
+            {copied ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            )}
+          </button>
+          <button onClick={handleDelete} style={styles.actionBtnDanger} title="Eliminar presentación">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <a href={`/p/${presentation.slug}`} style={styles.link} target="_blank" rel="noopener noreferrer">
-        <div style={styles.cardTheme}>
-          <span style={styles.slideCount}>{presentation.slides_count} slides</span>
-        </div>
+      {/* Body - draggable zone */}
+      <div style={styles.dragZone} {...listeners} {...attributes}>
         <div style={styles.cardBody}>
           <h3 style={styles.cardTitle}>{presentation.title}</h3>
           <p style={styles.cardDescription}>{presentation.description}</p>
@@ -91,7 +96,7 @@ export default function PresentationCard({ presentation, onDelete }) {
             )}
           </div>
         </div>
-      </a>
+      </div>
     </div>
   )
 }
@@ -104,48 +109,47 @@ const styles = {
     borderRadius: '12px',
     overflow: 'hidden',
     transition: 'transform 0.2s ease, border-color 0.2s ease',
-    cursor: 'grab',
   },
-  link: {
-    display: 'block',
-    textDecoration: 'none',
-    color: 'inherit',
+  cardHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '0.5rem 0.75rem',
+    background: '#111113',
+    borderBottom: '1px solid #27272a',
+  },
+  slideCount: {
+    color: '#71717a',
+    fontSize: '0.75rem',
   },
   cardActions: {
-    position: 'absolute',
-    top: '0.5rem',
-    right: '0.5rem',
     display: 'flex',
     gap: '0.25rem',
-    zIndex: 2,
   },
   actionBtn: {
-    background: 'rgba(0,0,0,0.6)',
-    backdropFilter: 'blur(4px)',
-    border: 'none',
-    color: '#d4d4d8',
+    background: 'none',
+    border: '1px solid transparent',
+    color: '#71717a',
     cursor: 'pointer',
-    padding: '0.375rem',
+    padding: '0.35rem',
     display: 'flex',
     alignItems: 'center',
     borderRadius: '6px',
-    transition: 'background 0.15s ease',
+    transition: 'color 0.15s ease, background 0.15s ease',
   },
-  cardTheme: {
-    height: '120px',
-    background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
+  actionBtnDanger: {
+    background: 'none',
+    border: '1px solid transparent',
+    color: '#71717a',
+    cursor: 'pointer',
+    padding: '0.35rem',
     display: 'flex',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    padding: '0.75rem',
-  },
-  slideCount: {
-    background: 'rgba(0,0,0,0.5)',
-    color: '#e0e7ff',
-    fontSize: '0.75rem',
-    padding: '0.25rem 0.5rem',
+    alignItems: 'center',
     borderRadius: '6px',
-    backdropFilter: 'blur(4px)',
+    transition: 'color 0.15s ease, background 0.15s ease',
+  },
+  dragZone: {
+    cursor: 'grab',
   },
   cardBody: {
     padding: '1.25rem',
