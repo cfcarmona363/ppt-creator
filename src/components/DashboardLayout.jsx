@@ -52,8 +52,11 @@ export default function DashboardLayout() {
   }, [fetchFolders])
 
   const handleSearch = useCallback((q) => {
-    setSearchQuery(q)
-    setLoading(true)
+    setSearchQuery((prev) => {
+      if (prev === q) return prev
+      setLoading(true)
+      return q
+    })
   }, [])
 
   const handleRefresh = useCallback(() => {
