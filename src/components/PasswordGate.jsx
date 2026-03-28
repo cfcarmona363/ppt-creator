@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import { InlineSpinner } from './Spinner'
 
 export default function PasswordGate({ children }) {
   const [authenticated, setAuthenticated] = useState(
-    () => sessionStorage.getItem('dashboard_auth') === 'true'
+    () => sessionStorage.getItem('dashboard_auth') === 'true' && !!sessionStorage.getItem('dashboard_token')
   )
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -52,7 +53,7 @@ export default function PasswordGate({ children }) {
         />
         {error && <p style={styles.error}>{error}</p>}
         <button type="submit" disabled={loading} style={styles.button}>
-          {loading ? 'Verificando...' : 'Acceder'}
+          {loading ? <><InlineSpinner size={14} color="#09090b" />{' '}Verificando...</> : 'Acceder'}
         </button>
       </form>
     </div>

@@ -3,6 +3,7 @@ import { DndContext, DragOverlay, pointerWithin } from '@dnd-kit/core'
 import Sidebar from './Sidebar'
 import PresentationGrid from './PresentationGrid'
 import ConfirmModal from './ConfirmModal'
+import { LoadingState } from './Spinner'
 import { apiFetch } from '../hooks/useApi'
 
 export default function DashboardLayout() {
@@ -133,7 +134,7 @@ export default function DashboardLayout() {
             </div>
           </header>
 
-          {loading && <p style={styles.status}>Cargando...</p>}
+          {loading && <LoadingState message="Cargando presentaciones..." />}
           {error && <p style={styles.statusError}>{error}</p>}
 
           {!loading && !error && (

@@ -10,6 +10,7 @@ export default function FolderList({ folders, selectedFolderId, onSelectFolder, 
   const [renamingFolder, setRenamingFolder] = useState(null)
   const [renameValue, setRenameValue] = useState('')
   const [deletingFolder, setDeletingFolder] = useState(null)
+  const [saving, setSaving] = useState(false)
 
   const { setNodeRef: rootRef, isOver: isOverRoot } = useDroppable({
     id: 'folder-root',
@@ -18,7 +19,8 @@ export default function FolderList({ folders, selectedFolderId, onSelectFolder, 
 
   async function handleCreate(e) {
     e.preventDefault()
-    if (!newName.trim()) return
+    if (!newName.trim() || saving) return
+    setSaving(true)
     try {
       await apiFetch('/api/folders', {
         method: 'POST',
@@ -29,12 +31,15 @@ export default function FolderList({ folders, selectedFolderId, onSelectFolder, 
       onFoldersChange()
     } catch (err) {
       console.error('Error creating folder:', err)
+    } finally {
+      setSaving(false)
     }
   }
 
   async function handleRename(e) {
     e.preventDefault()
-    if (!renameValue.trim() || !renamingFolder) return
+    if (!renameValue.trim() || !renamingFolder || saving) return
+    setSaving(true)
     try {
       await apiFetch(`/api/folders/${renamingFolder.id}`, {
         method: 'PATCH',
@@ -44,11 +49,14 @@ export default function FolderList({ folders, selectedFolderId, onSelectFolder, 
       onFoldersChange()
     } catch (err) {
       console.error('Error renaming folder:', err)
+    } finally {
+      setSaving(false)
     }
   }
 
   async function handleDelete() {
     if (!deletingFolder) return
+    setSaving(true)
     try {
       await apiFetch(`/api/folders/${deletingFolder.id}`, { method: 'DELETE' })
       setDeletingFolder(null)
@@ -58,6 +66,8 @@ export default function FolderList({ folders, selectedFolderId, onSelectFolder, 
       onFoldersChange()
     } catch (err) {
       console.error('Error deleting folder:', err)
+    } finally {
+      setSaving(false)
     }
   }
 

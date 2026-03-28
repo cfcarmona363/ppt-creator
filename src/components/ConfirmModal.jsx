@@ -1,15 +1,32 @@
+import { useState } from 'react'
+import { InlineSpinner } from './Spinner'
+
 export default function ConfirmModal({ title, message, onConfirm, onCancel }) {
+  const [loading, setLoading] = useState(false)
+
+  async function handleConfirm() {
+    setLoading(true)
+    try {
+      await onConfirm()
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <div style={styles.overlay} onClick={onCancel}>
+    <div style={styles.overlay} onClick={loading ? undefined : onCancel}>
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <h3 style={styles.title}>{title}</h3>
         <p style={styles.message}>{message}</p>
         <div style={styles.actions}>
-          <button onClick={onCancel} style={styles.cancelBtn}>
+          <button onClick={onCancel} style={styles.cancelBtn} disabled={loading}>
             Cancelar
           </button>
-          <button onClick={onConfirm} style={styles.confirmBtn}>
-            Eliminar
+          <button onClick={handleConfirm} style={{
+            ...styles.confirmBtn,
+            opacity: loading ? 0.7 : 1,
+          }} disabled={loading}>
+            {loading ? <><InlineSpinner size={14} color="#fafafa" />{' '}Eliminando...</> : 'Eliminar'}
           </button>
         </div>
       </div>
@@ -71,5 +88,8 @@ const styles = {
     fontSize: '0.875rem',
     fontWeight: 600,
     cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.25rem',
   },
 }
