@@ -22,6 +22,7 @@ export default function PasswordGate({ children }) {
 
       if (res.ok) {
         sessionStorage.setItem('dashboard_auth', 'true')
+        sessionStorage.setItem('dashboard_token', password)
         setAuthenticated(true)
       } else {
         setError('Password incorrecto')

@@ -1,20 +1,20 @@
 ---
 name: presentation-generator
-description: Genera presentaciones web autocontenidas y las deploya automáticamente a Presentation Hub via GitHub API
-trigger: Cuando el usuario pida crear una presentación, deck, slides, o presentación web. Frases comunes: "creame una presentación", "haceme un deck", "necesito slides sobre X", "armame una presentación web", "genera slides", "presentación sobre"
+description: Genera presentaciones web autocontenidas y las deploya a Presentation Hub via GitHub API. Usar cuando el usuario pida crear una presentacion, deck, slides, o presentacion web. Frases comunes - creame una presentacion, haceme un deck, necesito slides sobre X, armame una presentacion web, genera slides, presentacion sobre.
 ---
 
 # Presentation Generator Skill
 
 ## Descripción
 
-Esta skill genera presentaciones web completamente autocontenidas (HTML con CSS y JS inline) y las despliega automáticamente a Presentation Hub mediante la API de GitHub. Railway detecta el push y hace deploy automático.
+Esta skill genera presentaciones web completamente autocontenidas (HTML con CSS y JS inline) y las despliega automáticamente a Presentation Hub mediante su API REST.
 
 ## Flujo
 
 ### 1. Recopilar requisitos
 
 Preguntale al usuario:
+
 - **Tema**: ¿Sobre qué es la presentación?
 - **Audiencia**: ¿Para quién es? (inversores, equipo interno, conferencia, clase, etc.)
 - **Tono**: Profesional, casual, técnico, creativo
@@ -27,16 +27,20 @@ Preguntale al usuario:
 Creá un archivo HTML autocontenido siguiendo la guía en `references/html-template-guide.md`.
 
 **Reglas críticas:**
-- Cada presentación DEBE tener un estilo visual ÚNICO. No repitas diseños.
+
+- Seguir el diseño que pida el usuario, si no especifica uno entonces consultarlo
+- No usar imagenes por referencia, convertir a SVG e implementarlas directamente sobre el HTML
+- Mostrar un preview antes de subir los cambios para que el usuario los pueda validar
 - Todo el CSS y JS debe estar inline (no archivos externos)
 - Solo se permite cargar fuentes de Google Fonts CDN como recurso externo
 - El HTML debe funcionar abriendo el archivo directamente en el navegador
 - Incluir navegación por flechas del teclado (izq/der), clicks, y touch/swipe
 - Incluir indicador de progreso (slide actual / total)
 - Incluir transiciones suaves entre slides
-- El diseño debe ser responsive (desktop, tablet, mobile)
+- El diseño debe ser responsive (desktop, tablet, mobile) y analizar que la presentación tenga un margen inferior para que no se tape con el indicador de progreso
 
 **Tipos de slides a usar según el contenido:**
+
 - **Título**: Slide de apertura con título grande y subtítulo
 - **Contenido con bullets**: Heading + lista de puntos
 - **Imagen de fondo**: Sección con background-image y overlay
@@ -48,6 +52,7 @@ Creá un archivo HTML autocontenido siguiendo la guía en `references/html-templ
 ### 3. Generar ID único
 
 Creá un slug a partir del título:
+
 - Todo en minúsculas
 - Reemplazar espacios con guiones
 - Eliminar caracteres especiales
@@ -56,30 +61,47 @@ Creá un slug a partir del título:
 ### 4. Guardar el HTML localmente
 
 Escribí el HTML generado en un archivo temporal:
+
 ```
 /tmp/{slug}.html
 ```
 
-### 5. Subir a GitHub
+### 5. Subir al Presentation Hub
 
-Seguí la guía en `references/github-deploy-guide.md` para:
-
-1. Subir el HTML al repo via API de GitHub
-2. Actualizar el index.json agregando la nueva entrada
+Desplegá la presentación usando la API REST del hub.
 
 **Variables necesarias:**
-- `GITHUB_TOKEN`: Token con permisos de escritura al repo
-- `GITHUB_REPO`: En formato `owner/repo` (ej: `cfcarmona363/ppt-creator`)
-- `APP_URL`: URL base del deploy (ej: `https://mi-app.up.railway.app`)
+
+- DEPLOY_SECRET="" (secret para autenticación con la API)
+- APP_URL="https://ppt-creator-production.up.railway.app"
 
 Si no tenés acceso a estas variables, pedíselas al usuario.
 
+**Comando de deploy:**
+
+```bash
+curl -s -X POST \
+  -H "Authorization: Bearer $DEPLOY_SECRET" \
+  -H "Content-Type: application/json" \
+  "$APP_URL/api/presentations" \
+  -d "{
+    \"slug\": \"$SLUG\",
+    \"title\": \"$TITLE\",
+    \"description\": \"$DESCRIPTION\",
+    \"html_content\": $(cat /tmp/$SLUG.html | jq -Rs .),
+    \"slides_count\": $SLIDES_COUNT,
+    \"theme\": \"$THEME\"
+  }"
+```
+
+La presentación queda disponible inmediatamente en `$APP_URL/p/$SLUG` (sin esperar redeploy).
+
+Si el slug ya existe, se actualiza la presentación existente (upsert).
+
 **Si no hay red disponible:**
+
 - Generá el HTML como archivo local
-- Mostrá instrucciones claras para subir manualmente:
-  1. Copiar el archivo a `public/presentations/{slug}.html`
-  2. Actualizar `public/presentations/index.json` agregando la entrada
-  3. Commitear y pushear al repo
+- Mostrá instrucciones claras para subir manualmente via la API o copiando el archivo
 
 ### 6. Responder al usuario
 
@@ -97,12 +119,14 @@ Devolvé:
 2. {Título slide 2}
 ...
 
-⏱️ El deploy tarda ~1-2 minutos en estar live.
+🚀 La presentación ya está live.
 ```
 
 ## Notas
 
 - Consultá `references/html-template-guide.md` para la estructura del HTML, tipos de slides, y estilos de referencia
-- Consultá `references/github-deploy-guide.md` para los comandos exactos de la API de GitHub
-- Siempre variá los estilos — si las últimas presentaciones usaron dark themes, probá uno light o colorido
+- Consultá `references/api-deploy-guide.md` para los detalles de la API de deploy
+- Seguir el diseño que pida el usuario, si no especifica uno consultarlo
+- No usar imagenes por referencia, convertir a SVG e implementarlas directamente sobre el HTML
+- Mostrar un preview antes de subir los cambios para que el usuario los pueda validar
 - El tamaño del HTML no debe superar 1MB (GitHub API tiene límite de archivo)
