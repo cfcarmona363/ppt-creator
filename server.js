@@ -43,7 +43,7 @@ app.get('/api/presentations', async (req, res) => {
   try {
     const { folder_id, q } = req.query
     let text = 'SELECT id, slug, title, description, slides_count, theme, folder_id, created_at, updated_at FROM presentations'
-    const conditions = []
+    const conditions = ['deleted_at IS NULL']
     const params = []
 
     if (folder_id) {
@@ -60,9 +60,7 @@ app.get('/api/presentations', async (req, res) => {
       conditions.push(`(title ILIKE $${params.length} OR description ILIKE $${params.length})`)
     }
 
-    if (conditions.length > 0) {
-      text += ' WHERE ' + conditions.join(' AND ')
-    }
+    text += ' WHERE ' + conditions.join(' AND ')
 
     text += ' ORDER BY created_at DESC'
 
@@ -92,7 +90,8 @@ app.post('/api/presentations', requireAuth, async (req, res) => {
          html_content = EXCLUDED.html_content,
          slides_count = EXCLUDED.slides_count,
          theme = EXCLUDED.theme,
-         updated_at = now()
+         updated_at = now(),
+         deleted_at = NULL
        RETURNING id, slug, title, description, slides_count, theme, folder_id, created_at, updated_at`,
       [slug, title, description || null, html_content, slides_count || 0, theme || null, folder_id || null]
     )
@@ -112,7 +111,7 @@ app.patch('/api/presentations/:id', requireAuth, async (req, res) => {
 
     const result = await query(
       `UPDATE presentations SET folder_id = $1, updated_at = now()
-       WHERE id = $2
+       WHERE id = $2 AND deleted_at IS NULL
        RETURNING id, slug, title, description, slides_count, theme, folder_id, created_at, updated_at`,
       [folder_id || null, id]
     )
@@ -127,11 +126,14 @@ app.patch('/api/presentations/:id', requireAuth, async (req, res) => {
   }
 })
 
-// Delete presentation
+// Delete presentation (soft delete)
 app.delete('/api/presentations/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params
-    const result = await query('DELETE FROM presentations WHERE id = $1 RETURNING id', [id])
+    const result = await query(
+      'UPDATE presentations SET deleted_at = now() WHERE id = $1 AND deleted_at IS NULL RETURNING id',
+      [id]
+    )
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Presentation not found' })
@@ -216,7 +218,7 @@ app.delete('/api/folders/:id', requireAuth, async (req, res) => {
 app.get('/p/:id', async (req, res) => {
   const slug = req.params.id.replace(/[^a-zA-Z0-9_-]/g, '')
   try {
-    const result = await query('SELECT html_content FROM presentations WHERE slug = $1', [slug])
+    const result = await query('SELECT html_content FROM presentations WHERE slug = $1 AND deleted_at IS NULL', [slug])
     if (result.rows.length > 0) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8')
       return res.send(result.rows[0].html_content)

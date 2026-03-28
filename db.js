@@ -32,7 +32,8 @@ export async function initDb() {
       theme        TEXT,
       folder_id    UUID REFERENCES folders(id) ON DELETE SET NULL,
       created_at   TIMESTAMPTZ DEFAULT now(),
-      updated_at   TIMESTAMPTZ DEFAULT now()
+      updated_at   TIMESTAMPTZ DEFAULT now(),
+      deleted_at   TIMESTAMPTZ DEFAULT NULL
     )
   `)
 
@@ -41,6 +42,11 @@ export async function initDb() {
   `)
   await pool.query(`
     CREATE INDEX IF NOT EXISTS idx_presentations_folder ON presentations(folder_id)
+  `)
+
+  // Add deleted_at column if table already exists without it
+  await pool.query(`
+    ALTER TABLE presentations ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL
   `)
 }
 
