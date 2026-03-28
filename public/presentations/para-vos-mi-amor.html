@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para vos, mi amor 💛</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #fdf6f0;
+      --text: #3d2c2c;
+      --accent: #e8837c;
+      --accent2: #f9c74f;
+      --muted: #b8a09a;
+      --surface: #ffffff;
+      --heart: #e25860;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 6rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    /* ===== SLIDE 1: TÍTULO ===== */
+    .slide-title {
+      background: linear-gradient(135deg, #fdf6f0 0%, #fce4ec 50%, #fff3e0 100%);
+      text-align: center;
+    }
+
+    .slide-title .hearts-top {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      margin-bottom: 1.5rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .slide-title h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 6vw, 4.5rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .slide-title h1 .highlight {
+      color: var(--heart);
+      font-style: italic;
+    }
+
+    .slide-title .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* ===== SLIDE 2: PATITOS + MENSAJE ===== */
+    .slide-ducks {
+      background: linear-gradient(180deg, #fff9e6 0%, #fdf6f0 100%);
+      text-align: center;
+    }
+
+    .slide-ducks h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      color: var(--text);
+      margin-bottom: 2rem;
+    }
+
+    .duck-container {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .duck-img-wrapper {
+      width: clamp(140px, 25vw, 260px);
+      height: clamp(140px, 25vw, 260px);
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(249, 199, 79, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .duck-img-wrapper:hover {
+      transform: scale(1.05) rotate(3deg);
+    }
+
+    .duck-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide-ducks .caption {
+      font-size: clamp(0.95rem, 2vw, 1.2rem);
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ===== SLIDE 3: QUOTE / TE AMO ===== */
+    .slide-love {
+      background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 30%, #e8837c 100%);
+      text-align: center;
+    }
+
+    .slide-love .love-icon {
+      font-size: clamp(3rem, 8vw, 6rem);
+      margin-bottom: 1.5rem;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    .slide-love blockquote p {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3;
+      max-width: 700px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    }
+
+    .slide-love .sub-love {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: rgba(255,255,255,0.85);
+      margin-top: 1.5rem;
+      font-weight: 600;
+    }
+
+    /* ===== SLIDE 4: CIERRE ===== */
+    .slide-closing {
+      background: linear-gradient(135deg, #fdf6f0 0%, #fff3e0 50%, #fce4ec 100%);
+      text-align: center;
+    }
+
+    .slide-closing h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      line-height: 1.3;
+    }
+
+    .slide-closing .skill-box {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 2rem 3rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 2px solid var(--accent2);
+      margin-bottom: 2rem;
+      max-width: 550px;
+    }
+
+    .slide-closing .skill-box p {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .slide-closing .skill-box .emoji-line {
+      font-size: 1.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .slide-closing .final-msg {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--heart);
+      font-weight: 700;
+      font-style: italic;
+    }
+
+    /* ===== NAV ===== */
+    .nav-bar {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 100;
+    }
+
+    .nav-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0;
+    }
+
+    .nav-dot.active {
+      background: var(--accent);
+      transform: scale(1.3);
+    }
+
+    .slide-counter {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      z-index: 100;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .slide { padding: 2rem 1.5rem; }
+      .duck-container { gap: 1rem; }
+      .slide-closing .skill-box { padding: 1.5rem 1.5rem; }
+    }
+
+    /* ===== DECORATIVE ELEMENTS ===== */
+    .floating-hearts {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .floating-hearts span {
+      position: absolute;
+      font-size: 1.2rem;
+      opacity: 0.15;
+      animation: rise 8s ease-in-out infinite;
+    }
+
+    @keyframes rise {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.15; }
+      90% { opacity: 0.15; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+
+    <!-- SLIDE 1: Título -->
+    <section class="slide slide-title active" data-index="0">
+      <div class="floating-hearts">
+        <span style="left:5%; animation-delay:0s;">💛</span>
+        <span style="left:20%; animation-delay:2s;">🧡</span>
+        <span style="left:40%; animation-delay:4s;">💕</span>
+        <span style="left:60%; animation-delay:1s;">💛</span>
+        <span style="left:80%; animation-delay:3s;">💗</span>
+        <span style="left:92%; animation-delay:5s;">🧡</span>
+      </div>
+      <div class="hearts-top">💛🐥💛</div>
+      <h1>Para vos,<br><span class="highlight">mi amor</span></h1>
+      <p class="subtitle">Una presentación hecha con mucho cariño</p>
+    </section>
+
+    <!-- SLIDE 2: Patitos -->
+    <section class="slide slide-ducks" data-index="1">
+      <h2>Porque todo es mejor<br>con patitos 🐤</h2>
+      <div class="duck-container">
+        <!-- Patito 1: mirando a la derecha -->
+        <div class="duck-img-wrapper">
+          <svg class="duck-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="bg1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff9e6"/><stop offset="100%" stop-color="#fef3c7"/></radialGradient>
+              <radialGradient id="bodyG1" cx="45%" cy="40%" r="55%"><stop offset="0%" stop-color="#ffe066"/><stop offset="100%" stop-color="#f5c518"/></radialGradient>
+              <radialGradient id="headG1" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#ffe680"/><stop offset="100%" stop-color="#f5c518"/></radialGradient>
+            </defs>
+            <circle cx="150" cy="150" r="148" fill="url(#bg1)"/>
+            <!-- water -->
+            <ellipse cx="150" cy="230" rx="120" ry="30" fill="#a7d8f0" opacity="0.45"/>
+            <ellipse cx="150" cy="225" rx="110" ry="22" fill="#bfe6f7" opacity="0.35"/>
+            <!-- body -->
+            <ellipse cx="140" cy="190" rx="75" ry="55" fill="url(#bodyG1)"/>
+            <!-- wing -->
+            <ellipse cx="115" cy="185" rx="35" ry="30" fill="#eab308" opacity="0.6" transform="rotate(-10 115 185)"/>
+            <!-- tail -->
+            <path d="M65 175 Q45 155 55 140 Q65 150 75 165Z" fill="#eab308" opacity="0.7"/>
+            <!-- neck -->
+            <ellipse cx="185" cy="160" rx="22" ry="35" fill="#f5c518" transform="rotate(10 185 160)"/>
+            <!-- head -->
+            <circle cx="195" cy="125" r="30" fill="url(#headG1)"/>
+            <!-- eye -->
+            <circle cx="207" cy="118" r="5" fill="#1a1a2e"/>
+            <circle cx="209" cy="116" r="1.8" fill="#fff"/>
+            <!-- beak -->
+            <path d="M222 128 Q240 125 238 132 Q235 138 220 135Z" fill="#f97316"/>
+            <line x1="222" y1="131" x2="235" y2="130" stroke="#ea580c" stroke-width="0.8"/>
+            <!-- cheek blush -->
+            <circle cx="200" cy="133" r="8" fill="#fca5a5" opacity="0.35"/>
+            <!-- small ripples -->
+            <path d="M80 235 Q95 230 110 235" stroke="#93c5fd" stroke-width="1.2" fill="none" opacity="0.4"/>
+            <path d="M160 240 Q175 235 190 240" stroke="#93c5fd" stroke-width="1.2" fill="none" opacity="0.4"/>
+          </svg>
+        </div>
+        <!-- Patito 2: mirando a la izquierda con flor -->
+        <div class="duck-img-wrapper">
+          <svg class="duck-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="bg2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fef3f0"/><stop offset="100%" stop-color="#fce7f3"/></radialGradient>
+              <radialGradient id="bodyG2" cx="55%" cy="40%" r="55%"><stop offset="0%" stop-color="#ffe066"/><stop offset="100%" stop-color="#f5c518"/></radialGradient>
+              <radialGradient id="headG2" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#ffe680"/><stop offset="100%" stop-color="#f5c518"/></radialGradient>
+            </defs>
+            <circle cx="150" cy="150" r="148" fill="url(#bg2)"/>
+            <!-- grass -->
+            <ellipse cx="150" cy="235" rx="125" ry="28" fill="#86efac" opacity="0.35"/>
+            <ellipse cx="150" cy="230" rx="115" ry="20" fill="#bbf7d0" opacity="0.3"/>
+            <!-- body -->
+            <ellipse cx="160" cy="195" rx="72" ry="52" fill="url(#bodyG2)"/>
+            <!-- wing -->
+            <ellipse cx="185" cy="190" rx="33" ry="28" fill="#eab308" opacity="0.6" transform="rotate(10 185 190)"/>
+            <!-- tail -->
+            <path d="M235 180 Q255 160 245 145 Q235 155 225 170Z" fill="#eab308" opacity="0.7"/>
+            <!-- neck -->
+            <ellipse cx="115" cy="165" rx="22" ry="33" fill="#f5c518" transform="rotate(-10 115 165)"/>
+            <!-- head -->
+            <circle cx="105" cy="130" r="30" fill="url(#headG2)"/>
+            <!-- eye -->
+            <circle cx="92" cy="123" r="5" fill="#1a1a2e"/>
+            <circle cx="90" cy="121" r="1.8" fill="#fff"/>
+            <!-- beak -->
+            <path d="M78 133 Q60 130 62 137 Q65 143 80 140Z" fill="#f97316"/>
+            <line x1="78" y1="136" x2="65" y2="135" stroke="#ea580c" stroke-width="0.8"/>
+            <!-- cheek blush -->
+            <circle cx="100" cy="138" r="8" fill="#fca5a5" opacity="0.35"/>
+            <!-- flower on head -->
+            <circle cx="118" cy="105" r="5" fill="#f472b6"/>
+            <circle cx="110" cy="100" r="5" fill="#f9a8d4"/>
+            <circle cx="116" cy="97" r="5" fill="#f472b6"/>
+            <circle cx="123" cy="99" r="5" fill="#f9a8d4"/>
+            <circle cx="121" cy="106" r="5" fill="#f472b6"/>
+            <circle cx="116" cy="101" r="3.5" fill="#fbbf24"/>
+            <!-- small flowers on grass -->
+            <circle cx="80" cy="240" r="3" fill="#f9a8d4" opacity="0.5"/>
+            <circle cx="83" cy="238" r="3" fill="#f472b6" opacity="0.5"/>
+            <circle cx="81" cy="239" r="1.5" fill="#fbbf24" opacity="0.5"/>
+            <circle cx="220" cy="242" r="3" fill="#c4b5fd" opacity="0.5"/>
+            <circle cx="223" cy="240" r="3" fill="#a78bfa" opacity="0.5"/>
+            <circle cx="221" cy="241" r="1.5" fill="#fbbf24" opacity="0.5"/>
+          </svg>
+        </div>
+      </div>
+      <p class="caption">Tan tiernos como vos 💕</p>
+    </section>
+
+    <!-- SLIDE 3: Te amo -->
+    <section class="slide slide-love" data-index="2">
+      <div class="love-icon">❤️</div>
+      <blockquote>
+        <p>Te amo</p>
+      </blockquote>
+      <p class="sub-love">Hoy, mañana y siempre 💫</p>
+    </section>
+
+    <!-- SLIDE 4: Cierre -->
+    <section class="slide slide-closing" data-index="3">
+      <h2>Hice esto para vos 🎀</h2>
+      <div class="skill-box">
+        <div class="emoji-line">🐥✨🛠️</div>
+        <p>Esto es una <strong>skill</strong> que armé para crear presentaciones web automáticamente. Ojalá te sirva y la puedas usar para lo que necesites. ¡Se pueden hacer cosas muy lindas!</p>
+      </div>
+      <p class="final-msg">Te amo mucho, y quería compartir esto con vos 💛</p>
+    </section>
+
+  </div>
+
+  <!-- Navegación -->
+  <div class="nav-bar" id="navBar"></div>
+  <div class="slide-counter" id="counter"></div>
+
+  <script>
+    (function () {
+      const slides = document.querySelectorAll('.slide');
+      const navBar = document.getElementById('navBar');
+      const counter = document.getElementById('counter');
+      const total = slides.length;
+      let current = 0;
+
+      slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+        dot.addEventListener('click', () => goTo(i));
+        navBar.appendChild(dot);
+      });
+
+      function goTo(n) {
+        if (n < 0 || n >= total || n === current) return;
+        current = n;
+
+        slides.forEach((s, i) => {
+          s.classList.remove('active', 'prev');
+          if (i === current) s.classList.add('active');
+          else if (i < current) s.classList.add('prev');
+        });
+
+        navBar.querySelectorAll('.nav-dot').forEach((d, i) => {
+          d.classList.toggle('active', i === current);
+        });
+
+        counter.textContent = (current + 1) + ' / ' + total;
+      }
+
+      counter.textContent = '1 / ' + total;
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+      });
+
+      let touchX = 0;
+      document.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+      document.addEventListener('touchend', (e) => {
+        const diff = touchX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) goTo(diff > 0 ? current + 1 : current - 1);
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>

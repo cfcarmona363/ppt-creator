@@ -6,5 +6,21 @@
     "description": "Presentación de demostración del sistema",
     "slides_count": 5,
     "theme": "dark-elegant"
+  },
+  {
+    "id": "para-vos-mi-amor",
+    "title": "Para vos, mi amor",
+    "created": "2026-03-27",
+    "description": "Una presentación con patitos y mucho amor",
+    "slides_count": 4,
+    "theme": "soft-romantic"
+  },
+  {
+    "id": "vayu-energy",
+    "title": "Vayu Energy - Power Developers. Local by Design.",
+    "created": "2026-03-27",
+    "description": "Presentacion corporativa de Vayu Energy",
+    "slides_count": 10,
+    "theme": "earth-elegant"
   }
 ]
